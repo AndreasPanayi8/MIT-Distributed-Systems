@@ -13,9 +13,11 @@ package mr
 type TaskType int
 
 const (
-	MapTask TaskType = iota
+	// WaitTask is first so it is the zero value: a failed or empty
+	// GetTaskReply decodes to "wait and retry", never to real work.
+	WaitTask TaskType = iota
+	MapTask
 	ReduceTask
-	WaitTask
 	ExitTask
 )
 
