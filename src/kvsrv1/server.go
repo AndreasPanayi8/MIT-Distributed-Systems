@@ -58,14 +58,14 @@ func (kv *KVServer) Put(args *rpc.PutArgs, reply *rpc.PutReply) {
 
 	if e, ok := kv.db[args.Key]; ok {
 		if args.Version == e.version {
-			kv.db[args.Key] = entry{value: args.Value, version: args.Version}
+			kv.db[args.Key] = entry{value: args.Value, version: args.Version + 1}
 			reply.Err = rpc.OK
 		} else {
 			reply.Err = rpc.ErrVersion
 		}
 	} else {
 		if args.Version == 0 {
-			kv.db[args.Key] = entry{value: args.Value, version: args.Version}
+			kv.db[args.Key] = entry{value: args.Value, version: args.Version + 1}
 			reply.Err = rpc.OK
 		} else {
 			reply.Err = rpc.ErrNoKey
