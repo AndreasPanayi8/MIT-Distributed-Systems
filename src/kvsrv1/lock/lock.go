@@ -35,6 +35,10 @@ func MakeLock(ck kvtest.IKVClerk, lockname string) *Lock {
 func (lk *Lock) Acquire() {
 	for {
 		value, version, err := lk.ck.Get(lk.key)
+		if value == lk.myID {
+			// we already hold the lock
+			break
+		}
 		if err == rpc.ErrNoKey {
 			err2 := lk.ck.Put(lk.key, lk.myID, 0)
 			if err2 == rpc.OK {
@@ -60,7 +64,7 @@ func (lk *Lock) Release() {
 		panic("Release failed: not owner")
 	}
 	err2 := lk.ck.Put(lk.key, "", version)
-	if err2 != rpc.OK {
+	if err2 != rpc.OK && err2 != rpc.ErrMaybe {
 		panic("Release failed")
 	}
 }
